@@ -1,3 +1,4 @@
+const groceryList  = require('./groceryList')
 const express = require('express')
 const app = express();
 const cors = require('cors');
@@ -112,6 +113,78 @@ app.post("/getCatExpense", async(req, res)=> {
     }
     await client.disconnect()
 
+})
+app.get("/groceryList", (req,res)=>{
+res.send(groceryList);
+});
+app.post("/postReminder", async(req,res)=>{
+    await client.connect()
+    let homeString = await client.get('homes')
+    let homeJson = JSON.parse(homeString);
+    let homeData = homeJson[req.body.homeId];
+    if(homeData.hasOwnProperty("Reminders")){
+        homeData["Reminders"].push(req.body.reminder);
+    }
+    else{
+        homeData["Reminders"] = [];
+        homeData["Reminders"].push(req.body.reminder);
+    }
+    homeJson[req.body.homeId] = homeData;
+    await client.set("homes", JSON.stringify(homeJson))
+    res.send({"Message": "reminder saved successfully!", "status": "success"});
+    await client.disconnect()
+})
+
+app.post("/updateReminder", async(req, res)=> {
+    await client.connect()
+    let homeString = await client.get('homes')
+    let homeJson = JSON.parse(homeString);
+    let homeData = homeJson[req.body.homeId];
+    if(homeData.hasOwnProperty("Reminders")){
+        homeData["Reminders"] = req.body.reminders;
+        homeData["miscReminder"] = req.body.miscReminders;
+        homeJson[req.body.homeId] = homeData;
+        await client.set("homes", JSON.stringify(homeJson));
+        res.send({"Message": "reminder updated successfully!", "status": "success"});
+    }
+    else{
+        res.send({"Message": "error in updating reminders!", "status": "error"});
+    }
+    await client.disconnect()
+})
+app.post("/getReminders",async(req,res)=> {
+    await client.connect()
+    let homeString = await client.get('homes')
+    let homeJson = JSON.parse(homeString);
+    let homeData = homeJson[req.body.homeId];
+    if(homeData.hasOwnProperty("Reminders") && homeData["Reminders"].length>0){
+        if(homeData.hasOwnProperty("miscReminder") && homeData["miscReminder"].length>0){
+            res.send({"Reminders": homeData["Reminders"], "miscReminders": homeData["miscReminder"]})
+        }
+        else
+            res.send({"Reminders": homeData["Reminders"]})
+    }
+    else{
+        res.send({"Message":"No Reminders", "status": "success"});
+    }
+    await client.disconnect();
+})
+app.post("/miscReminder", async(req,res)=>{
+    await client.connect()
+    let homeString = await client.get('homes')
+    let homeJson = JSON.parse(homeString);
+    let homeData = homeJson[req.body.homeId];
+    if(homeData.hasOwnProperty("miscReminder")){
+        homeData["miscReminder"].push(req.body.miscReminder);
+    }
+    else{
+        homeData["miscReminder"] = [];
+        homeData["miscReminder"].push(req.body.miscReminder);
+    }
+    homeJson[req.body.homeId] = homeData;
+    await client.set("homes", JSON.stringify(homeJson));
+    res.send({"Message": "Misc Reminder Set Successfully!", "status": "success"});
+    await client.disconnect()
 })
 app.listen(PORT, () => {
     console.log("Server Listening on PORT:", PORT);
