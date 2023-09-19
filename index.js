@@ -140,8 +140,8 @@ app.post("/updateReminder", async(req, res)=> {
     let homeString = await client.get('homes')
     let homeJson = JSON.parse(homeString);
     let homeData = homeJson[req.body.homeId];
-    homeData["Reminders"] = req.body.reminders;
-    homeData["miscReminder"] = req.body.miscReminders;
+    homeData["reminders"] = req.body.reminders;
+    homeData["miscReminders"] = req.body.miscReminders;
     homeJson[req.body.homeId] = homeData;
     await client.set("homes", JSON.stringify(homeJson));
     res.send({"Message": "reminder updated successfully!", "status": "success"});
@@ -152,12 +152,12 @@ app.post("/getReminders",async(req,res)=> {
     let homeString = await client.get('homes')
     let homeJson = JSON.parse(homeString);
     let homeData = homeJson[req.body.homeId];
-    let responseBody = {"Reminders":[], "miscReminders":[]};
-    if(homeData.hasOwnProperty("Reminders") && homeData["Reminders"].length>0){
-        responseBody.Reminders = homeData["Reminders"];
+    let responseBody = {"reminders":[], "miscReminders":[]};
+    if(homeData.hasOwnProperty("reminders") && homeData["reminders"].length>0){
+        responseBody.Reminders = homeData["reminders"];
     }
-    if(homeData.hasOwnProperty("miscReminder") && homeData["miscReminder"].length>0){
-        responseBody.miscReminders = homeData["miscReminder"];
+    if(homeData.hasOwnProperty("miscReminders") && homeData["miscReminders"].length>0){
+        responseBody.miscReminders = homeData["miscReminders"];
     }
     res.send(responseBody);
     await client.disconnect();
