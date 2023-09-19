@@ -154,7 +154,7 @@ app.post("/getReminders",async(req,res)=> {
     let homeData = homeJson[req.body.homeId];
     let responseBody = {"reminders":[], "miscReminders":[]};
     if(homeData.hasOwnProperty("reminders") && homeData["reminders"].length>0){
-        responseBody.Reminders = homeData["reminders"];
+        responseBody.reminders = homeData["reminders"];
     }
     if(homeData.hasOwnProperty("miscReminders") && homeData["miscReminders"].length>0){
         responseBody.miscReminders = homeData["miscReminders"];
