@@ -99,7 +99,7 @@ let groceryList = {
         "Mopper": "unit"
     },
     "Pooja Items": {
-        "Ghee": "unit",
+        "Pooja Ghee": "unit",
         "Agarbatti": "unit",
         "Dhoop": "unit"
     },
